@@ -18,7 +18,7 @@ run  lint  check.sh     the course run contract
 
 ## First Run
 
-Fill `predictions.tsv`, check its shape with `./lint`, and commit it before you
+Fill `predictions.tsv`, check its form with `./lint`, and commit it before you
 evaluate a case. Then run one case or the whole grader:
 
 ```bash
@@ -30,7 +30,7 @@ evaluate a case. Then run one case or the whole grader:
 `./lint` reads the table's form only. It never opens `tests/expected.tsv` and
 never evaluates a case, so it reveals no answers and is safe to run before the
 prediction commit. It catches a padded cell, a space inside a value, a tab an
-editor replaced with spaces, and a missing or reordered row. Those faults
+editor replaced with spaces, and a missing or reordered row, all of which
 survive the parse and then fail their comparisons, so without it they read like
 wrong predictions. One trailing space per line fails all 16 `operator` checks
 that way. `./check.sh` lists the same faults before it scores.
@@ -41,10 +41,10 @@ expected table and the grader are both in this repository.
 
 ## Reading a First Run
 
-Don't read `1/90` as progress. The single pass is `evaluator_loads`, which asks
+Read `1/90` as the starting state. The single pass is `evaluator_loads`, which asks
 only whether `src/evaluator.lisp` reads without a syntax fault. The stubs
-satisfy that on the first commit, because a stub that signals an error when you
-call it is still valid Lisp. Every prediction, every evaluator check, and the
+satisfy that on the first commit. A stub that signals an error when called
+is still valid Lisp. Every prediction, every evaluator check, and the
 analysis check fail. Nothing has been done.
 
 That check earns its place anyway. `load` evaluates one form at a time, so a
@@ -75,12 +75,12 @@ leaves E1, E2, and E3 at full marks and zeroes E4.
 `check.sh`, `lint`, and `run` all start CLISP with a small bootstrap that
 defines `ps3-load`, and every Lisp file here uses it in place of `load`.
 
-That is not a style preference. GNU CLISP 2.49 on Windows answers `Win32 error
+That works around a Windows bug. GNU CLISP 2.49 on Windows answers `Win32 error
 267 (ERROR_DIRECTORY)` for `(load "any/path.lisp")` in every directory, which
 also breaks passing a script as a command-line argument. Loading from an
 already-open stream works, so `ps3-load` opens the file first and hands `load`
-the stream. The same bootstrap runs on all three platforms, so there is one
-contract to learn rather than two.
+the stream. The same bootstrap runs on all three platforms. You learn one
+contract.
 
 ## When the Grader Stops Early
 
