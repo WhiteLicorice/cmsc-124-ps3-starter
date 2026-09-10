@@ -1,4 +1,4 @@
-;;;; evaluator.lisp -- Part 2. Write the seven functions below.
+;;;; evaluator.lisp -- Part 2. Write the eight functions below.
 ;;;;
 ;;;; The toy language is a Lisp-1. One namespace holds both variables and
 ;;;; functions, so a variable bound to a closure is callable in operator

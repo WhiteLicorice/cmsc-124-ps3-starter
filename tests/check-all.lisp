@@ -1,5 +1,6 @@
-;;;; check-all.lisp -- the complete public grader. This file is the whole
-;;;; grade. Nothing is hidden and nothing else is run.
+;;;; check-all.lisp -- the complete public automated checker. No hidden tests
+;;;; assess code behavior. The rubric separately assesses the analysis,
+;;;; commit history, and workflow runs.
 
 (ps3-load "cases/cases.lisp")
 (ps3-load "scripts/support.lisp")

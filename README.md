@@ -11,7 +11,7 @@ cases/cases.lisp        the 16 forms, stored unevaluated
 predictions.tsv         your value, kind, length, and operator predictions
 src/evaluator.lisp      the eight functions you implement
 tests/expected.tsv      every published expected result
-tests/check-all.lisp    the complete public grader
+tests/check-all.lisp    the complete public automated checker
 scripts/                given runner, notation, and form-check code
 run  lint  check.sh     the course run contract
 ```
@@ -19,7 +19,7 @@ run  lint  check.sh     the course run contract
 ## First Run
 
 Fill `predictions.tsv`, check its form with `./lint`, and commit it before you
-evaluate a case. Then run one case or the whole grader:
+evaluate a case. Then run one case or all automated checks:
 
 ```bash
 ./lint
@@ -36,8 +36,10 @@ wrong predictions. One trailing space per line fails all 16 `operator` checks
 that way. `./check.sh` lists the same faults before it scores.
 
 A fresh starter reports `1/90 checks passed` and exits 1. A complete submission
-reports `90/90 checks passed` and exits 0. `check.sh` is the whole grade. The
-expected table and the grader are both in this repository.
+reports `90/90 checks passed` and exits 0. `check.sh` is the complete public
+automated check. The expected table and the checker are both in this
+repository. The assignment rubric separately assesses the written analysis,
+commit history, and workflow runs.
 
 ## Reading a First Run
 
