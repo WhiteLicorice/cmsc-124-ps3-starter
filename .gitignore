@@ -1,0 +1,4 @@
+# CLISP leftovers. Nothing here belongs in a commit.
+*.fas
+*.lib
+*.mem

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -u
+
+root="$(cd "$(dirname "$0")" && pwd)"
+cd "$root"
+
+if ! command -v clisp >/dev/null 2>&1; then
+    echo "check.sh: clisp is not on PATH. Complete the CLISP setup in the manual." >&2
+    exit 1
+fi
+
+# CLISP 2.49 on Windows cannot LOAD a file by name. It answers Win32 error
+# 267 for every path, which also breaks passing a script as an argument.
+# Loading from an already-open stream works on every platform, so ps3-load
+# is defined here and every Lisp file in this repository uses it.
+exec clisp -q -norc -x '(progn (setq *load-verbose* nil *load-print* nil) (defun ps3-load (path) (with-open-file (stream path) (load stream))) (ps3-load "tests/check-all.lisp") (ext:exit 0))'

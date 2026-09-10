@@ -1,0 +1,50 @@
+name: ps3-checks
+on: [push]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+
+      # There is no setup-clisp action, so each runner installs it by hand.
+      - name: Install CLISP (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clisp
+
+      - name: Install CLISP (macOS)
+        if: runner.os == 'macOS'
+        run: brew install clisp
+
+      # GNU CLISP has shipped no release since 2.49 in 2010 and there is no
+      # Windows package worth using, so the runner unpacks the official zip.
+      - name: Install CLISP (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $url = "https://sourceforge.net/projects/clisp/files/clisp/2.49/clisp-2.49-win32-mingw-big.zip/download"
+          # curl.exe, not Invoke-WebRequest. SourceForge answers Invoke-WebRequest
+          # with a 145 KB HTML interstitial instead of the archive, and
+          # Expand-Archive then fails on a file that is not a zip.
+          curl.exe -sSL -o "$env:RUNNER_TEMP\clisp.zip" $url
+          Expand-Archive -Path "$env:RUNNER_TEMP\clisp.zip" -DestinationPath "$env:RUNNER_TEMP\clisp" -Force
+          "$env:RUNNER_TEMP\clisp\clisp-2.49" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+
+      - name: Report the version this runner grades with
+        run: clisp --version
+        shell: bash
+
+      - run: chmod +x run check.sh lint
+        shell: bash
+
+      - run: ./run P01
+        shell: bash
+
+      - run: ./check.sh
+        shell: bash
