@@ -114,8 +114,12 @@ Every row below is a run that happened.
 |---|---|---|
 | Windows 11 24H2, Git Bash, the 2.49 win32-mingw zip | `GNU CLISP 2.49 (2010-07-07)` | `1/90` on the starter, `90/90` with the instructor solution |
 | WSL Ubuntu 24.04, `apt-get install clisp` | `GNU CLISP 2.49.93+ (2018-02-18)` | `1/90` on the starter, `90/90` with the instructor solution |
+| GitHub Actions, `ubuntu-latest`, `apt-get install clisp` | `GNU CLISP 2.49.93+ (2018-02-18)` | `1/90` on the starter |
+| GitHub Actions, `macos-latest`, `brew install clisp` | `GNU CLISP 2.49.92 (2018-02-18)`, arm64 | `1/90` on the starter |
+| GitHub Actions, `windows-latest`, the 2.49 win32-mingw zip | `GNU CLISP 2.49 (2010-07-07)` | `1/90` on the starter |
 
-Both runtimes derive an identical `tests/expected.tsv`, field for field, across
-all 16 cases. Sixteen years separate the two builds. The Homebrew formula ships
-2.49.92, which falls between them, so a macOS run is expected to agree. That
-one has not been run here.
+Three CLISP builds grade this assignment and sixteen years separate the oldest
+from the newest. They agree. The grader re-derives all 64 published
+expectations before it scores anything, so a build that printed one value
+differently, or classified one head differently, would stop the run and say so.
+No runner has. `./run P01` also prints the same four fields on all three.
