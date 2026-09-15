@@ -54,9 +54,9 @@ truncated form at the end of the file leaves every function above it defined
 and working. Without a check on the load itself, a file that stops mid-form
 scores 89 of 89 and exits 0.
 
-The Actions badge on this repository is red for the same reason the score is
-low. It stays red until a pair completes the assignment, which is the correct
-state for a starter. Yours goes green when you finish.
+The workflow run in this repository's Actions tab is red for the same reason
+the score is low. It stays red until a pair completes the assignment. That is
+the correct state for a starter. Your fork's run goes green when you finish.
 
 ## The Four Check Groups
 
