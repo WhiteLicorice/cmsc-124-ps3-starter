@@ -9,6 +9,7 @@ Problem Set 3. The assignment manual defines the work and the submission rules.
 ```text
 cases/cases.lisp        the 16 forms, stored unevaluated
 predictions.tsv         your value, kind, length, and operator predictions
+REASONING.md            the rule behind every case, written before you run
 src/evaluator.lisp      the eight functions you implement
 tests/expected.tsv      every published expected result
 tests/check-all.lisp    the complete public automated checker
@@ -18,8 +19,9 @@ run  lint  check.sh     the course run contract
 
 ## First Run
 
-Fill `predictions.tsv`, check its form with `./lint`, and commit it before you
-evaluate a case. Then run one case or all automated checks:
+Fill `predictions.tsv` and `REASONING.md`, check the table's form with `./lint`,
+and commit both before you evaluate a case. Then run one case or all automated
+checks:
 
 ```bash
 ./lint
@@ -35,24 +37,24 @@ survive the parse and then fail their comparisons, so without it they read like
 wrong predictions. One trailing space per line fails all 16 `operator` checks
 that way. `./check.sh` lists the same faults before it scores.
 
-A fresh starter reports `1/90 checks passed` and exits 1. A complete submission
-reports `90/90 checks passed` and exits 0. `check.sh` is the complete public
+A fresh starter reports `1/91 checks passed` and exits 1. A complete submission
+reports `91/91 checks passed` and exits 0. `check.sh` is the complete public
 automated check. The expected table and the checker are both in this
 repository. The assignment rubric separately assesses the written analysis,
 commit history, and workflow runs.
 
 ## Reading a First Run
 
-Read `1/90` as the starting state. The single pass is `evaluator_loads`, which asks
+Read `1/91` as the starting state. The single pass is `evaluator_loads`, which asks
 only whether `src/evaluator.lisp` reads without a syntax fault. The stubs
 satisfy that on the first commit. A stub that signals an error when called
-is still valid Lisp. Every prediction, every evaluator check, and the
-analysis check fail. Nothing has been done.
+is still valid Lisp. Every prediction, every evaluator check, and both written
+files fail. Nothing has been done.
 
 That check earns its place anyway. `load` evaluates one form at a time, so a
 truncated form at the end of the file leaves every function above it defined
 and working. Without a check on the load itself, a file that stops mid-form
-scores 89 of 89 and exits 0.
+scores 90 of 90 and exits 0.
 
 The workflow run in this repository's Actions tab is red for the same reason
 the score is low. It stays red until a pair completes the assignment. That is
@@ -100,7 +102,7 @@ The course contract.
 
 | Code | Command | Meaning |
 |---|---|---|
-| 0 | `./check.sh` | all 90 checks passed |
+| 0 | `./check.sh` | all 91 checks passed |
 | 1 | `./check.sh` | at least one check failed |
 | 0 | `./lint` | `predictions.tsv` is well formed and complete |
 | 1 | `./lint` | the table is malformed or still holds a TODO |
@@ -114,11 +116,11 @@ Every row below is a run that happened.
 
 | Environment | Version reported by `clisp --version` | Result |
 |---|---|---|
-| Windows 11 24H2, Git Bash, the 2.49 win32-mingw zip | `GNU CLISP 2.49 (2010-07-07)` | `1/90` on the starter, `90/90` with the instructor solution |
-| WSL Ubuntu 24.04, `apt-get install clisp` | `GNU CLISP 2.49.93+ (2018-02-18)` | `1/90` on the starter, `90/90` with the instructor solution |
-| GitHub Actions, `ubuntu-latest`, `apt-get install clisp` | `GNU CLISP 2.49.93+ (2018-02-18)` | `1/90` on the starter |
-| GitHub Actions, `macos-latest`, `brew install clisp` | `GNU CLISP 2.49.92 (2018-02-18)`, arm64 | `1/90` on the starter |
-| GitHub Actions, `windows-latest`, the 2.49 win32-mingw zip | `GNU CLISP 2.49 (2010-07-07)` | `1/90` on the starter |
+| Windows 11 24H2, Git Bash, the 2.49 win32-mingw zip | `GNU CLISP 2.49 (2010-07-07)` | `1/91` on the starter, `91/91` with the instructor solution |
+| WSL Ubuntu 24.04, `apt-get install clisp` | `GNU CLISP 2.49.93+ (2018-02-18)` | `1/91` on the starter, `91/91` with the instructor solution |
+| GitHub Actions, `ubuntu-latest`, `apt-get install clisp` | `GNU CLISP 2.49.93+ (2018-02-18)` | `1/91` on the starter |
+| GitHub Actions, `macos-latest`, `brew install clisp` | `GNU CLISP 2.49.92 (2018-02-18)`, arm64 | `1/91` on the starter |
+| GitHub Actions, `windows-latest`, the 2.49 win32-mingw zip | `GNU CLISP 2.49 (2010-07-07)` | `1/91` on the starter |
 
 Three CLISP builds grade this assignment and eight years separate the oldest
 from the newest. They agree. The grader re-derives all 64 published
