@@ -262,6 +262,70 @@ or missing function fails its own checks and leaves every other group alone."
     count))
 
 (format t "~%== analysis ==~%")
+
+;;; REASONING.md carries the pair's reasoning for the prediction table. The
+;;; check below reads structure only. It does not judge quality and it sets no
+;;; word minimum, because a minimum invites padding. It runs here, below the
+;;; header, so the two written files sit in one group.
+
+(defparameter *ps3-reasoning-placeholder*
+  "Replace this line with the rule behind this case's four fields."
+  "The exact line the starter ships under every heading. A student who leaves
+one in place has not written that entry, so the check names the case.")
+
+(defun ps3-reasoning-case-id (line)
+  "The case id in a heading of the form ## PNN, or NIL when LINE is not one."
+  (let ((trimmed (string-trim '(#\Space #\Tab #\Return) line)))
+    (when (and (> (length trimmed) 3)
+               (string= (subseq trimmed 0 3) "## "))
+      (let ((rest (subseq trimmed 3 6)))
+        (when (and (= (length rest) 3)
+                   (char= (char rest 0) #\P)
+                   (digit-char-p (char rest 1))
+                   (digit-char-p (char rest 2)))
+          (string-upcase rest))))))
+
+(defun ps3-check-reasoning ()
+  "REASONING.md holds every heading ## P01 to ## P16 in order, each with a real
+entry, and no copy of the template placeholder. Signals an error naming the
+first fault."
+  (let ((lines (ps3-read-lines "REASONING.md")))
+    (when (eq lines :missing)
+      (error "REASONING.md is missing. Add it, one entry per case, and commit it ~
+with predictions.tsv before you run any case."))
+    (let ((seen '())
+          (current nil)
+          (content nil))
+      (labels ((close-section ()
+                 (when (and current (not content))
+                   (error "REASONING.md has no entry under the ## ~a heading. ~
+Write the rule that produces its four fields." current))))
+        (dolist (line lines)
+          (let ((id (ps3-reasoning-case-id line)))
+            (cond
+              (id
+               (close-section)
+               (setf current id content nil)
+               (push id seen))
+              (current
+               (unless (ps3-blank-p line)
+                 (when (search *ps3-reasoning-placeholder* line)
+                   (error "REASONING.md still holds the template placeholder under ~
+## ~a. Replace it with the rule behind that case." current))
+                 (setf content t))))))
+        (close-section))
+      (setf seen (nreverse seen))
+      (dolist (id *ps3-ids*)
+        (unless (member id seen :test #'string=)
+          (error "REASONING.md is missing the heading ## ~a. Every case needs one ~
+heading from ## P01 to ## P16." id)))
+      (unless (equal seen *ps3-ids*)
+        (error "REASONING.md must hold the headings ## P01 to ## P16 in order, ~
+once each. Found: ~{~a~^ ~}." seen))
+      t)))
+
+(ps3-check "reasoning_written" #'ps3-check-reasoning)
+
 (ps3-check "analysis_written"
            (lambda ()
              (let ((text (ps3-read-file "ANALYSIS.md")))
