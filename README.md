@@ -120,7 +120,7 @@ Every row below is a run that happened.
 | GitHub Actions, `macos-latest`, `brew install clisp` | `GNU CLISP 2.49.92 (2018-02-18)`, arm64 | `1/90` on the starter |
 | GitHub Actions, `windows-latest`, the 2.49 win32-mingw zip | `GNU CLISP 2.49 (2010-07-07)` | `1/90` on the starter |
 
-Three CLISP builds grade this assignment and sixteen years separate the oldest
+Three CLISP builds grade this assignment and eight years separate the oldest
 from the newest. They agree. The grader re-derives all 64 published
 expectations before it scores anything, so a build that printed one value
 differently, or classified one head differently, would stop the run and say so.
