@@ -138,7 +138,9 @@ or missing function fails its own checks and leaves every other group alone."
              t))
 
 (ps3-check "E1.eval_number"
-           (lambda () (eql (ps3-call 'eval-expr 42 '()) 42)))
+           (lambda ()
+             (and (eql (ps3-call 'eval-expr 42 '()) 42)
+                  (eql (ps3-call 'eval-expr 3/4 '()) 3/4))))
 (ps3-check "E1.eval_symbol"
            (lambda () (eql (ps3-call 'eval-expr 'x '((x . 7))) 7)))
 (ps3-check "E1.lookup_first_match"
@@ -147,10 +149,13 @@ or missing function fails its own checks and leaves every other group alone."
            (lambda () (eql (ps3-call 'lookup 'y '((x . 1) (y . 2))) 2)))
 ;; This one asks for the working case as well as the error. A stub that
 ;; signals on everything would otherwise pass it without looking anything up.
+;; A binding whose value is NIL is a second working case. A LOOKUP that tests
+;; the value instead of the pair reads that binding as unbound and fails here.
 (ps3-check "E1.lookup_unbound"
            (lambda ()
              (let ((fn (ps3-need 'lookup)))
                (and (eql (funcall fn 'x '((x . 1))) 1)
+                    (null (funcall fn 'x '((x . nil))))
                     (ps3-signals-p (lambda () (funcall fn 'z '())))))))
 
 (ps3-check "E2.apply_op_arithmetic"
@@ -199,15 +204,20 @@ or missing function fails its own checks and leaves every other group alone."
                     '(:closure (n) (+ n 1) ((c . 3))))))
 (ps3-check "E4.apply_closure"
            (lambda ()
-             (eql (ps3-call 'apply-closure
-                            (ps3-call 'make-closure '(n) '(+ n 1) '((n . 100)))
-                            '(5))
-                  6)))
+             (and (eql (ps3-call 'apply-closure
+                                 (ps3-call 'make-closure '(n) '(+ n 1) '((n . 100)))
+                                 '(5))
+                       6)
+                  (eql (ps3-call 'apply-closure
+                                 (ps3-call 'make-closure '(a b) '(+ a b) '())
+                                 '(2 3))
+                       5))))
 (ps3-check "E4.apply_closure_arity"
            (lambda ()
              (let ((fn (ps3-need 'apply-closure))
                    (closure (ps3-call 'make-closure '(n) '(+ n 1) '())))
-               (ps3-signals-p (lambda () (funcall fn closure '(1 2)))))))
+               (and (ps3-signals-p (lambda () (funcall fn closure '(1 2))))
+                    (ps3-signals-p (lambda () (funcall fn '(:wrong (n) n ()) '(5))))))))
 (ps3-check "E4.lambda_applied_directly"
            (lambda () (eql (ps3-call 'eval-expr '((lambda (n) (* n 2)) 21) '()) 42)))
 (ps3-check "E4.lambda_through_variable"
