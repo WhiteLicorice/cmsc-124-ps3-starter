@@ -28,10 +28,10 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $url = "https://sourceforge.net/projects/clisp/files/clisp/2.49/clisp-2.49-win32-mingw-big.zip/download"
-          # curl.exe, not Invoke-WebRequest. SourceForge answers Invoke-WebRequest
-          # with a 145 KB HTML interstitial instead of the archive, and
-          # Expand-Archive then fails on a file that is not a zip.
+          # The direct host serves the archive. On 2026-10-01 the
+          # sourceforge.net/projects/.../download link began to return an HTML page
+          # instead, and Expand-Archive failed on a file that is not a zip.
+          $url = "https://downloads.sourceforge.net/project/clisp/clisp/2.49/clisp-2.49-win32-mingw-big.zip"
           curl.exe -sSL -o "$env:RUNNER_TEMP\clisp.zip" $url
           Expand-Archive -Path "$env:RUNNER_TEMP\clisp.zip" -DestinationPath "$env:RUNNER_TEMP\clisp" -Force
           "$env:RUNNER_TEMP\clisp\clisp-2.49" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
