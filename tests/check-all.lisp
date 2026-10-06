@@ -137,6 +137,10 @@ or missing function fails its own checks and leaves every other group alone."
                (error "src/evaluator.lisp did not load cleanly. ~a" *ps3-load-fault*))
              t))
 
+(defun ps3-float= (value expected)
+  "True when VALUE is a float equal in value to EXPECTED, in any float format."
+  (and (floatp value) (= value expected)))
+
 (ps3-check "E1.eval_number"
            (lambda ()
              (and (eql (ps3-call 'eval-expr 42 '()) 42)
@@ -170,7 +174,11 @@ or missing function fails its own checks and leaves every other group alone."
                   (eql (ps3-call 'apply-op '- '(2 3)) -1)
                   (eql (ps3-call 'apply-op '* '(2 3)) 6)
                   (eql (ps3-call 'apply-op '+ '(1/2 1/4)) 3/4)
-                  (eql (ps3-call 'apply-op '* '(0.5 2)) 1.0))))
+                  (eql (ps3-call 'apply-op '- '(1/2 1/4)) 1/4)
+                  ;; A float result compares by value. The manual does not fix
+                  ;; the float format, so 1.0d0 also passes.
+                  (ps3-float= (ps3-call 'apply-op '* '(0.5 2)) 1.0)
+                  (ps3-float= (ps3-call 'apply-op '- '(1.5 0.25)) 1.25))))
 (ps3-check "E2.apply_op_unknown"
            (lambda ()
              (let ((fn (ps3-need 'apply-op)))
@@ -184,7 +192,7 @@ or missing function fails its own checks and leaves every other group alone."
            (lambda ()
              (and (eql (ps3-call 'eval-expr '(+ 1 2) '()) 3)
                   (eql (ps3-call 'eval-expr '(+ 1/2 1/4) '()) 3/4)
-                  (eql (ps3-call 'eval-expr '(* 0.5 2) '()) 1.0))))
+                  (ps3-float= (ps3-call 'eval-expr '(* 0.5 2) '()) 1.0))))
 (ps3-check "E2.eval_nested"
            (lambda () (eql (ps3-call 'eval-expr '(* (+ 1 2) (- 10 4)) '()) 18)))
 (ps3-check "E2.eval_uses_env"
@@ -222,7 +230,9 @@ or missing function fails its own checks and leaves every other group alone."
                   (ps3-signals-p
                    (lambda () (ps3-call 'eval-expr '(let ((x 1) (y x)) y) '())))
                   (eql (ps3-call 'eval-let '(let ((x 2) (y x)) (+ x y)) '((x . 1)))
-                       3))))
+                       3)
+                  (ps3-signals-p
+                   (lambda () (ps3-call 'eval-let '(let ((x 1) (y x)) y) '()))))))
 
 (ps3-check "E4.make_closure_shape"
            (lambda ()
