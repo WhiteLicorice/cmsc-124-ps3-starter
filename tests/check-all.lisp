@@ -223,7 +223,12 @@ or missing function fails its own checks and leaves every other group alone."
                   (eql (ps3-call 'apply-closure
                                  (ps3-call 'make-closure '() 42 '())
                                  '())
-                       42))))
+                       42)
+                  ;; No parameters still keeps the saved environment.
+                  (eql (ps3-call 'apply-closure
+                                 (ps3-call 'make-closure '() 'x '((x . 7)))
+                                 '())
+                       7))))
 (ps3-check "E4.apply_closure_arity"
            (lambda ()
              (let ((fn (ps3-need 'apply-closure))
@@ -233,9 +238,18 @@ or missing function fails its own checks and leaves every other group alone."
                     (ps3-signals-p
                      (lambda ()
                        (funcall fn (ps3-call 'make-closure '(x y) 'x '()) '(7))))
+                    (ps3-signals-p
+                     (lambda ()
+                       (funcall fn (ps3-call 'make-closure '(x) 42 '()) '())))
                     (ps3-signals-p (lambda () (funcall fn '(:wrong (n) n ()) '(5))))))))
 (ps3-check "E4.lambda_applied_directly"
-           (lambda () (eql (ps3-call 'eval-expr '((lambda (n) (* n 2)) 21) '()) 42)))
+           (lambda ()
+             (and (eql (ps3-call 'eval-expr '((lambda (n) (* n 2)) 21) '()) 42)
+                  (eql (ps3-call 'eval-expr '((lambda () 42)) '()) 42)
+                  (eql (ps3-call 'eval-expr
+                                 '(let ((f (lambda () 5))) (f))
+                                 '())
+                       5))))
 (ps3-check "E4.lambda_through_variable"
            (lambda ()
              (eql (ps3-call 'eval-expr '(let ((f (lambda (n) (+ n 1)))) (f 41)) '()) 42)))
