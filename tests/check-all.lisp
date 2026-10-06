@@ -207,7 +207,8 @@ or missing function fails its own checks and leaves every other group alone."
 (ps3-check "E3.let_binds_body"
            (lambda ()
              (and (eql (ps3-call 'eval-expr '(let ((x 2)) (* x x)) '()) 4)
-                  (eql (ps3-call 'eval-expr '(let ((x 7)) (let () x)) '()) 7))))
+                  (eql (ps3-call 'eval-expr '(let ((x 7)) (let () x)) '()) 7)
+                  (eql (ps3-call 'eval-let '(let ((x 7)) x) '()) 7))))
 (ps3-check "E3.let_shadows_outer"
            (lambda () (eql (ps3-call 'eval-expr '(let ((x 2)) x) '((x . 9))) 2)))
 (ps3-check "E3.let_ends_at_body"
@@ -238,6 +239,10 @@ or missing function fails its own checks and leaves every other group alone."
                                  '())
                        42)
                   (eql (ps3-call 'eval-expr '((lambda (x y) (- x y)) 8 3) '()) 5)
+                  (eql (ps3-call 'apply-closure
+                                 (ps3-call 'make-closure '(x y z) '(+ x (* y z)) '())
+                                 '(1 2 3))
+                       7)
                   ;; No parameters still keeps the saved environment.
                   (eql (ps3-call 'apply-closure
                                  (ps3-call 'make-closure '() 'x '((x . 7)))
@@ -260,8 +265,11 @@ or missing function fails its own checks and leaves every other group alone."
                        (funcall fn (ps3-call 'make-closure '() 42 '()) '(7))))
                     (ps3-signals-p (lambda () (funcall fn '(:wrong (n) n ()) '(5))))
                     (ps3-signals-p (lambda () (funcall fn 42 '())))
+                    ;; A constant body, so only a count test can raise the error.
                     (ps3-signals-p
-                     (lambda () (ps3-call 'eval-expr '((lambda (x) x)) '())))))))
+                     (lambda () (ps3-call 'eval-expr '((lambda (x) 42)) '())))
+                    (ps3-signals-p
+                     (lambda () (ps3-call 'eval-expr '((lambda () 42) 7) '())))))))
 (ps3-check "E4.lambda_applied_directly"
            (lambda ()
              (and (eql (ps3-call 'eval-expr '((lambda (n) (* n 2)) 21) '()) 42)
@@ -304,7 +312,14 @@ or missing function fails its own checks and leaves every other group alone."
                                     (let ((y 1))
                                       (f y)))
                                  '())
-                       101))))
+                       101)
+                  (eql (ps3-call 'eval-expr
+                                 '(let ((y 100))
+                                    (let ((f (lambda (x) (+ x y))))
+                                      (let ((y 1))
+                                        (f (+ y 1)))))
+                                 '())
+                       102))))
 
 ;;; Part 3 -- the written comparison.
 
