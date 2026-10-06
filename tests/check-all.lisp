@@ -144,9 +144,8 @@ or missing function fails its own checks and leaves every other group alone."
                   (eql (ps3-call 'eval-expr 0.5 '()) 0.5))))
 (ps3-check "E1.eval_symbol"
            (lambda ()
-             ;; NIL is a symbol too, and a symbol bound to NIL evaluates to NIL.
+             ;; NIL is a symbol too, so it goes through LOOKUP like any name.
              (and (eql (ps3-call 'eval-expr 'x '((x . 7))) 7)
-                  (null (ps3-call 'eval-expr 'x '((x . nil))))
                   (eql (ps3-call 'eval-expr nil '((nil . 7))) 7)
                   (ps3-signals-p (lambda () (ps3-call 'eval-expr 'z '()))))))
 (ps3-check "E1.lookup_first_match"
@@ -162,6 +161,7 @@ or missing function fails its own checks and leaves every other group alone."
              (let ((fn (ps3-need 'lookup)))
                (and (eql (funcall fn 'x '((x . 1))) 1)
                     (null (funcall fn 'x '((x . nil))))
+                    (null (ps3-call 'eval-expr 'x '((x . nil))))
                     (ps3-signals-p (lambda () (funcall fn 'z '())))))))
 
 (ps3-check "E2.apply_op_arithmetic"
@@ -237,6 +237,7 @@ or missing function fails its own checks and leaves every other group alone."
                                  (ps3-call 'make-closure '() 42 '())
                                  '())
                        42)
+                  (eql (ps3-call 'eval-expr '((lambda (x y) (- x y)) 8 3) '()) 5)
                   ;; No parameters still keeps the saved environment.
                   (eql (ps3-call 'apply-closure
                                  (ps3-call 'make-closure '() 'x '((x . 7)))
@@ -269,7 +270,6 @@ or missing function fails its own checks and leaves every other group alone."
                                  '(let ((f (lambda () 5))) (f))
                                  '())
                        5)
-                  (eql (ps3-call 'eval-expr '((lambda (x y) (- x y)) 8 3) '()) 5)
                   (eql (ps3-call 'eval-expr '(let ((x 7)) ((lambda () x))) '()) 7))))
 (ps3-check "E4.lambda_through_variable"
            (lambda ()
