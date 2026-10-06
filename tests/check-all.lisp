@@ -140,7 +140,8 @@ or missing function fails its own checks and leaves every other group alone."
 (ps3-check "E1.eval_number"
            (lambda ()
              (and (eql (ps3-call 'eval-expr 42 '()) 42)
-                  (eql (ps3-call 'eval-expr 3/4 '()) 3/4))))
+                  (eql (ps3-call 'eval-expr 3/4 '()) 3/4)
+                  (eql (ps3-call 'eval-expr 0.5 '()) 0.5))))
 (ps3-check "E1.eval_symbol"
            (lambda () (eql (ps3-call 'eval-expr 'x '((x . 7))) 7)))
 (ps3-check "E1.lookup_first_match"
