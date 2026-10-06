@@ -141,6 +141,25 @@ or missing function fails its own checks and leaves every other group alone."
   "True when VALUE is a float equal in value to EXPECTED, in any float format."
   (and (floatp value) (= value expected)))
 
+;; One operand of each kind on the left and on the right. Every float and
+;; every float result here is exact in binary, so it has the same value in
+;; every float format.
+(defparameter *ps3-left-operands* '(3 1/4 0.5))
+(defparameter *ps3-right-operands* '(2 3/8 0.75))
+
+(defun ps3-arithmetic-p (compute)
+  "True when (COMPUTE OP A B) gives the host result for each of +, -, and *
+on every left and right operand pair. A float result compares by value, and
+any other result must be the same number."
+  (loop for op in '(+ - *)
+        always (loop for a in *ps3-left-operands*
+                     always (loop for b in *ps3-right-operands*
+                                  always (let ((want (funcall op a b))
+                                               (got (funcall compute op a b)))
+                                           (if (floatp want)
+                                               (ps3-float= got want)
+                                               (eql got want)))))))
+
 (ps3-check "E1.eval_number"
            (lambda ()
              (and (eql (ps3-call 'eval-expr 42 '()) 42)
@@ -178,7 +197,10 @@ or missing function fails its own checks and leaves every other group alone."
                   ;; A float result compares by value. The manual does not fix
                   ;; the float format, so 1.0d0 also passes.
                   (ps3-float= (ps3-call 'apply-op '* '(0.5 2)) 1.0)
-                  (ps3-float= (ps3-call 'apply-op '- '(1.5 0.25)) 1.25))))
+                  (ps3-float= (ps3-call 'apply-op '- '(1.5 0.25)) 1.25)
+                  ;; Every operator on every kind of operand pair.
+                  (ps3-arithmetic-p
+                   (lambda (op a b) (ps3-call 'apply-op op (list a b)))))))
 (ps3-check "E2.apply_op_unknown"
            (lambda ()
              (let ((fn (ps3-need 'apply-op)))
@@ -192,7 +214,11 @@ or missing function fails its own checks and leaves every other group alone."
            (lambda ()
              (and (eql (ps3-call 'eval-expr '(+ 1 2) '()) 3)
                   (eql (ps3-call 'eval-expr '(+ 1/2 1/4) '()) 3/4)
-                  (ps3-float= (ps3-call 'eval-expr '(* 0.5 2) '()) 1.0))))
+                  (ps3-float= (ps3-call 'eval-expr '(* 0.5 2) '()) 1.0)
+                  ;; The same pairs through EVAL-EXPR, so a dispatcher that
+                  ;; does its own arithmetic is held to the same results.
+                  (ps3-arithmetic-p
+                   (lambda (op a b) (ps3-call 'eval-expr (list op a b) '()))))))
 (ps3-check "E2.eval_nested"
            (lambda () (eql (ps3-call 'eval-expr '(* (+ 1 2) (- 10 4)) '()) 18)))
 (ps3-check "E2.eval_uses_env"
