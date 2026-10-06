@@ -116,7 +116,7 @@ Every row below is a run that happened.
 
 | Environment | Version reported by `clisp --version` | Result |
 |---|---|---|
-| Windows 11 24H2, Git Bash, the 2.49 win32-mingw zip | `GNU CLISP 2.49 (2010-07-07)` | `1/91` on the starter, `91/91` with the instructor solution |
+| Windows 11 25H2, Git Bash, the 2.49 win32-mingw zip | `GNU CLISP 2.49 (2010-07-07)` | `1/91` on the starter, `91/91` with the instructor solution |
 | WSL Ubuntu 24.04, `apt-get install clisp` | `GNU CLISP 2.49.93+ (2018-02-18)` | `1/91` on the starter, `91/91` with the instructor solution |
 | GitHub Actions, `ubuntu-latest`, `apt-get install clisp` | `GNU CLISP 2.49.93+ (2018-02-18)` | `1/91` on the starter |
 | GitHub Actions, `macos-latest`, `brew install clisp` | `GNU CLISP 2.49.92 (2018-02-18)`, arm64 | `1/91` on the starter |
