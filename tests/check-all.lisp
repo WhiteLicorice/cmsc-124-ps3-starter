@@ -141,30 +141,46 @@ or missing function fails its own checks and leaves every other group alone."
   "True when VALUE is a float equal in value to EXPECTED, in any float format."
   (and (floatp value) (= value expected)))
 
-;; One operand of each kind on the left and on the right. Every float and
-;; every float result here is exact in binary, so it has the same value in
-;; every float format.
-(defparameter *ps3-left-operands* '(3 1/4 0.5))
-(defparameter *ps3-right-operands* '(2 3/8 0.75))
+;; Operands on the left and on the right: integers that are positive,
+;; negative, zero, past a byte, and past a fixnum, then ratios and floats of
+;; each sign. Every float here is exact in binary. A float result is exact
+;; too, except a sum or difference with 2^80, which rounds to 2^80 in every
+;; float format of 64 bits or fewer.
+(defparameter *ps3-left-operands*
+  (list 3 -5 0 256 (expt 2 80) 1/4 -3/8 0.5 -0.75))
+(defparameter *ps3-right-operands*
+  (list 2 -7 0 256 (expt 2 80) 3/8 -1/4 0.75 -0.5))
+
+(defun ps3-number= (value expected float-operand-p)
+  "True when VALUE is the result EXPECTED. A float compares by value. When an
+operand is a float, a rational result may come back as a float, because
+Common Lisp lets (* 0 0.75) give 0 or 0.0. Any other result must be the same
+number."
+  (cond ((floatp expected) (ps3-float= value expected))
+        (float-operand-p (and (realp value) (= value expected)))
+        (t (eql value expected))))
 
 (defun ps3-arithmetic-p (compute)
   "True when (COMPUTE OP A B) gives the host result for each of +, -, and *
-on every left and right operand pair. A float result compares by value, and
-any other result must be the same number."
+on every left and right operand pair."
   (loop for op in '(+ - *)
         always (loop for a in *ps3-left-operands*
                      always (loop for b in *ps3-right-operands*
-                                  always (let ((want (funcall op a b))
-                                               (got (funcall compute op a b)))
-                                           (if (floatp want)
-                                               (ps3-float= got want)
-                                               (eql got want)))))))
+                                  always (ps3-number=
+                                          (funcall compute op a b)
+                                          (funcall op a b)
+                                          (or (floatp a) (floatp b)))))))
 
 (ps3-check "E1.eval_number"
            (lambda ()
              (and (eql (ps3-call 'eval-expr 42 '()) 42)
                   (eql (ps3-call 'eval-expr 3/4 '()) 3/4)
-                  (eql (ps3-call 'eval-expr 0.5 '()) 0.5))))
+                  (eql (ps3-call 'eval-expr 0.5 '()) 0.5)
+                  (eql (ps3-call 'eval-expr -2 '()) -2)
+                  (eql (ps3-call 'eval-expr 0 '()) 0)
+                  (eql (ps3-call 'eval-expr -3/4 '()) -3/4)
+                  (eql (ps3-call 'eval-expr -0.5 '()) -0.5)
+                  (eql (ps3-call 'eval-expr (expt 2 80) '()) (expt 2 80)))))
 (ps3-check "E1.eval_symbol"
            (lambda ()
              ;; NIL is a symbol too, so it goes through LOOKUP like any name.
