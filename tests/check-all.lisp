@@ -180,8 +180,15 @@ or missing function fails its own checks and leaves every other group alone."
 
 (ps3-check "E3.extend_env"
            (lambda ()
-             (equal (ps3-call 'extend-env '(a b) '(1 2) '((c . 3)))
-                    '((a . 1) (b . 2) (c . 3)))))
+             ;; The manual puts the new pairs at the front. It does not fix
+             ;; their order, so PAIRLIS and a PUSH loop also pass.
+             (let ((out (ps3-call 'extend-env '(a b) '(1 2) '((c . 3)))))
+               (and (listp out)
+                    (eql (list-length out) 3)
+                    (equal (nthcdr 2 out) '((c . 3)))
+                    (member '(a . 1) (subseq out 0 2) :test #'equal)
+                    (member '(b . 2) (subseq out 0 2) :test #'equal)
+                    t))))
 (ps3-check "E3.extend_env_leaves_input"
            (lambda ()
              (let ((env (list (cons 'c 3))))
