@@ -143,20 +143,24 @@ or missing function fails its own checks and leaves every other group alone."
 
 ;; Operands on the left and on the right: integers that are positive,
 ;; negative, zero, past a byte, and past a fixnum, then ratios and floats of
-;; each sign. Every float here is exact in binary. A float result is exact
-;; too, except a sum or difference with 2^80, which rounds to 2^80 in every
-;; float format of 64 bits or fewer.
+;; each sign and a float zero. Every float here is exact in binary.
 (defparameter *ps3-left-operands*
-  (list 3 -5 0 256 (expt 2 80) 1/4 -3/8 0.5 -0.75))
+  (list 3 -5 0 256 (expt 2 80) 1/4 -3/8 0.5 -0.75 0.0))
 (defparameter *ps3-right-operands*
-  (list 2 -7 0 256 (expt 2 80) 3/8 -1/4 0.75 -0.5))
+  (list 2 -7 0 256 (expt 2 80) 3/8 -1/4 0.75 -0.5 0.0))
 
-(defun ps3-number= (value expected float-operand-p)
-  "True when VALUE is the result EXPECTED. A float compares by value. When an
-operand is a float, a rational result may come back as a float, because
-Common Lisp lets (* 0 0.75) give 0 or 0.0. Any other result must be the same
-number."
-  (cond ((floatp expected) (ps3-float= value expected))
+(defun ps3-number= (value expected exact float-operand-p)
+  "True when VALUE is the result EXPECTED that the host computed. EXACT is the
+same result in rational arithmetic.
+
+A float result may be the host's float, or EXACT rounded to the format of
+VALUE. A sum with 2^80 rounds away its fraction in a 64-bit float but keeps
+it in a 128-bit long-float, and both are correct. When an operand is a
+float, a rational result may come back as a float, because Common Lisp lets
+(* 0 0.75) give 0 or 0.0. Any other result must be the same number."
+  (cond ((floatp expected)
+         (and (floatp value)
+              (or (= value expected) (= value (float exact value)))))
         (float-operand-p (and (realp value) (= value expected)))
         (t (eql value expected))))
 
@@ -169,6 +173,7 @@ on every left and right operand pair."
                                   always (ps3-number=
                                           (funcall compute op a b)
                                           (funcall op a b)
+                                          (funcall op (rational a) (rational b))
                                           (or (floatp a) (floatp b)))))))
 
 (ps3-check "E1.eval_number"
@@ -180,6 +185,7 @@ on every left and right operand pair."
                   (eql (ps3-call 'eval-expr 0 '()) 0)
                   (eql (ps3-call 'eval-expr -3/4 '()) -3/4)
                   (eql (ps3-call 'eval-expr -0.5 '()) -0.5)
+                  (eql (ps3-call 'eval-expr 0.0 '()) 0.0)
                   (eql (ps3-call 'eval-expr (expt 2 80) '()) (expt 2 80)))))
 (ps3-check "E1.eval_symbol"
            (lambda ()
