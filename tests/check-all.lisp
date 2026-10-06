@@ -143,7 +143,12 @@ or missing function fails its own checks and leaves every other group alone."
                   (eql (ps3-call 'eval-expr 3/4 '()) 3/4)
                   (eql (ps3-call 'eval-expr 0.5 '()) 0.5))))
 (ps3-check "E1.eval_symbol"
-           (lambda () (eql (ps3-call 'eval-expr 'x '((x . 7))) 7)))
+           (lambda ()
+             ;; NIL is a symbol too, and a symbol bound to NIL evaluates to NIL.
+             (and (eql (ps3-call 'eval-expr 'x '((x . 7))) 7)
+                  (null (ps3-call 'eval-expr 'x '((x . nil))))
+                  (eql (ps3-call 'eval-expr nil '((nil . 7))) 7)
+                  (ps3-signals-p (lambda () (ps3-call 'eval-expr 'z '()))))))
 (ps3-check "E1.lookup_first_match"
            (lambda () (eql (ps3-call 'lookup 'x '((x . 1) (x . 9))) 1)))
 (ps3-check "E1.lookup_deeper"
@@ -171,9 +176,13 @@ or missing function fails its own checks and leaves every other group alone."
                     (ps3-signals-p (lambda () (funcall fn '/ '(6 3))))))))
 (ps3-check "E2.eval_operands"
            (lambda ()
-             (equal (ps3-call 'eval-operands '(1 (+ 1 1) x) '((x . 3))) '(1 2 3))))
+             (and (equal (ps3-call 'eval-operands '(1 (+ 1 1) x) '((x . 3))) '(1 2 3))
+                  (null (ps3-call 'eval-operands '() '((x . 3)))))))
 (ps3-check "E2.eval_sum"
-           (lambda () (eql (ps3-call 'eval-expr '(+ 1 2) '()) 3)))
+           (lambda ()
+             (and (eql (ps3-call 'eval-expr '(+ 1 2) '()) 3)
+                  (eql (ps3-call 'eval-expr '(+ 1/2 1/4) '()) 3/4)
+                  (eql (ps3-call 'eval-expr '(* 0.5 2) '()) 1.0))))
 (ps3-check "E2.eval_nested"
            (lambda () (eql (ps3-call 'eval-expr '(* (+ 1 2) (- 10 4)) '()) 18)))
 (ps3-check "E2.eval_uses_env"
@@ -196,7 +205,9 @@ or missing function fails its own checks and leaves every other group alone."
                (ps3-call 'extend-env '(a) '(1) env)
                (equal env '((c . 3))))))
 (ps3-check "E3.let_binds_body"
-           (lambda () (eql (ps3-call 'eval-expr '(let ((x 2)) (* x x)) '()) 4)))
+           (lambda ()
+             (and (eql (ps3-call 'eval-expr '(let ((x 2)) (* x x)) '()) 4)
+                  (eql (ps3-call 'eval-expr '(let ((x 7)) (let () x)) '()) 7))))
 (ps3-check "E3.let_shadows_outer"
            (lambda () (eql (ps3-call 'eval-expr '(let ((x 2)) x) '((x . 9))) 2)))
 (ps3-check "E3.let_ends_at_body"
@@ -204,7 +215,9 @@ or missing function fails its own checks and leaves every other group alone."
              (eql (ps3-call 'eval-expr '(let ((x 1)) (+ (let ((x 2)) x) x)) '()) 3)))
 (ps3-check "E3.let_binds_in_parallel"
            (lambda ()
-             (eql (ps3-call 'eval-expr '(let ((x 1)) (let ((x 2) (y x)) (+ x y))) '()) 3)))
+             (and (eql (ps3-call 'eval-expr '(let ((x 1)) (let ((x 2) (y x)) (+ x y))) '()) 3)
+                  (ps3-signals-p
+                   (lambda () (ps3-call 'eval-expr '(let ((x 1) (y x)) y) '()))))))
 
 (ps3-check "E4.make_closure_shape"
            (lambda ()
@@ -241,7 +254,13 @@ or missing function fails its own checks and leaves every other group alone."
                     (ps3-signals-p
                      (lambda ()
                        (funcall fn (ps3-call 'make-closure '(x) 42 '()) '())))
-                    (ps3-signals-p (lambda () (funcall fn '(:wrong (n) n ()) '(5))))))))
+                    (ps3-signals-p
+                     (lambda ()
+                       (funcall fn (ps3-call 'make-closure '() 42 '()) '(7))))
+                    (ps3-signals-p (lambda () (funcall fn '(:wrong (n) n ()) '(5))))
+                    (ps3-signals-p (lambda () (funcall fn 42 '())))
+                    (ps3-signals-p
+                     (lambda () (ps3-call 'eval-expr '((lambda (x) x)) '())))))))
 (ps3-check "E4.lambda_applied_directly"
            (lambda ()
              (and (eql (ps3-call 'eval-expr '((lambda (n) (* n 2)) 21) '()) 42)
@@ -249,10 +268,21 @@ or missing function fails its own checks and leaves every other group alone."
                   (eql (ps3-call 'eval-expr
                                  '(let ((f (lambda () 5))) (f))
                                  '())
-                       5))))
+                       5)
+                  (eql (ps3-call 'eval-expr '((lambda (x y) (- x y)) 8 3) '()) 5)
+                  (eql (ps3-call 'eval-expr '(let ((x 7)) ((lambda () x))) '()) 7))))
 (ps3-check "E4.lambda_through_variable"
            (lambda ()
-             (eql (ps3-call 'eval-expr '(let ((f (lambda (n) (+ n 1)))) (f 41)) '()) 42)))
+             (and (eql (ps3-call 'eval-expr '(let ((f (lambda (n) (+ n 1)))) (f 41)) '()) 42)
+                  ;; The operator position is any expression, not only a name.
+                  (eql (ps3-call 'eval-expr
+                                 '((let ((f (lambda (x) (+ x 1)))) f) 7)
+                                 '())
+                       8)
+                  (eql (ps3-call 'eval-expr
+                                 '(((lambda (x) (lambda (y) (+ x y))) 7) 3)
+                                 '())
+                       10))))
 (ps3-check "E4.lambda_as_argument"
            (lambda ()
              (eql (ps3-call 'eval-expr
@@ -262,13 +292,19 @@ or missing function fails its own checks and leaves every other group alone."
                   21)))
 (ps3-check "E4.lexical_scope"
            (lambda ()
-             (eql (ps3-call 'eval-expr
+             (and (eql (ps3-call 'eval-expr
                             '(let ((x 2))
                                (let ((f (lambda (y) (+ x y))))
                                  (let ((x 100))
                                    (f 1))))
                             '())
-                  3)))
+                  3)
+                  (eql (ps3-call 'eval-expr
+                                 '(let ((f (let ((y 100)) (lambda (x) (+ x y)))))
+                                    (let ((y 1))
+                                      (f y)))
+                                 '())
+                       101))))
 
 ;;; Part 3 -- the written comparison.
 
