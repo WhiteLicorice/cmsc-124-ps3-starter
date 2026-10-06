@@ -168,7 +168,9 @@ or missing function fails its own checks and leaves every other group alone."
            (lambda ()
              (and (eql (ps3-call 'apply-op '+ '(2 3)) 5)
                   (eql (ps3-call 'apply-op '- '(2 3)) -1)
-                  (eql (ps3-call 'apply-op '* '(2 3)) 6))))
+                  (eql (ps3-call 'apply-op '* '(2 3)) 6)
+                  (eql (ps3-call 'apply-op '+ '(1/2 1/4)) 3/4)
+                  (eql (ps3-call 'apply-op '* '(0.5 2)) 1.0))))
 (ps3-check "E2.apply_op_unknown"
            (lambda ()
              (let ((fn (ps3-need 'apply-op)))
@@ -218,7 +220,9 @@ or missing function fails its own checks and leaves every other group alone."
            (lambda ()
              (and (eql (ps3-call 'eval-expr '(let ((x 1)) (let ((x 2) (y x)) (+ x y))) '()) 3)
                   (ps3-signals-p
-                   (lambda () (ps3-call 'eval-expr '(let ((x 1) (y x)) y) '()))))))
+                   (lambda () (ps3-call 'eval-expr '(let ((x 1) (y x)) y) '())))
+                  (eql (ps3-call 'eval-let '(let ((x 2) (y x)) (+ x y)) '((x . 1)))
+                       3))))
 
 (ps3-check "E4.make_closure_shape"
            (lambda ()
@@ -239,6 +243,8 @@ or missing function fails its own checks and leaves every other group alone."
                                  '())
                        42)
                   (eql (ps3-call 'eval-expr '((lambda (x y) (- x y)) 8 3) '()) 5)
+                  (eql (ps3-call 'eval-expr '((lambda (x y z) (+ x (* y z))) 1 2 3) '())
+                       7)
                   (eql (ps3-call 'apply-closure
                                  (ps3-call 'make-closure '(x y z) '(+ x (* y z)) '())
                                  '(1 2 3))
