@@ -283,7 +283,7 @@ one in place has not written that entry, so the check names the case.")
 (defun ps3-reasoning-case-id (line)
   "The case id in a heading of the form ## PNN, or NIL when LINE is not one."
   (let ((trimmed (string-trim '(#\Space #\Tab #\Return) line)))
-    (when (and (> (length trimmed) 3)
+    (when (and (>= (length trimmed) 6)
                (string= (subseq trimmed 0 3) "## "))
       (let ((rest (subseq trimmed 3 6)))
         (when (and (= (length rest) 3)
