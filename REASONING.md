@@ -12,16 +12,16 @@ wrongly. Say what you predicted, what CLISP printed, and which rule you
 misread. Those entries belong in the correction commits.
 
 ## P01
-Replace this line with the rule behind this case's four fields.
+value: 7 (a compound form follows the rule selected by its head), kind: integer (the variables the + function performed upon are integers), length: 3 (there is a function, an integer, and a list inside the main list), operator: function (+ is classified as a function)
 
 ## P02
-Replace this line with the rule behind this case's four fields.
+value: 3 (a compound form follows the rule selected by its head), kind: integer (the variables the + function performed upon are integers), length: 3 (there is a function, and two integers inside the list), operator: function (+ is classified as a function)
 
 ## P03
-Replace this line with the rule behind this case's four fields.
+value: null, kind: nil, length: 0 (nil is an empty list), operator: none
 
 ## P04
-Replace this line with the rule behind this case's four fields.
+value: null, kind: symbol (t is considered as a symbol), length: 1, operator: none
 
 ## P05
 Replace this line with the rule behind this case's four fields.
