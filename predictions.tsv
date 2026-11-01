@@ -1,17 +1,17 @@
-id	value	kind	length	operator
-P01	7	    integer 3       function
-P02	3	    integer	3	    function
-P03	null	nil 	null	none
-P04	null	symbol	1	    none
-P05	symbolp	string	2	    none
-P06	TODO	TODO	TODO	TODO
-P07	TODO	TODO	TODO	TODO
-P08	TODO	TODO	TODO	TODO
-P09	TODO	TODO	TODO	TODO
-P10	TODO	TODO	TODO	TODO
-P11	TODO	TODO	TODO	TODO
-P12	TODO	TODO	TODO	TODO
-P13	TODO	TODO	TODO	TODO
-P14	TODO	TODO	TODO	TODO
-P15	TODO	TODO	TODO	TODO
-P16	TODO	TODO	TODO	TODO
+id	value	            kind	length	operator
+P01	(+, 1, (*, 2, 3,))  integer none    function
+P02	(+, 1, 2)	        integer	none	function
+P03	nil	                nil 	none	none
+P04	t	                symbol	none	none
+P05	(symbolp, nil)      list	2	    none
+P06	(car, ', ())        list	none   	function
+P07	(1, 2, 3)	        list	3	    function
+P08	(if, (null, ', ()))	TODO	TODO	special operator
+P09	TODO	            TODO	TODO	special operator
+P10	TODO	            TODO	TODO	TODO
+P11	TODO	            TODO	TODO	TODO
+P12	TODO	            TODO	TODO	TODO
+P13	TODO	            TODO	TODO	TODO
+P14	TODO	            TODO	TODO	TODO
+P15	TODO	            TODO	TODO	TODO
+P16	TODO	            TODO	TODO	TODO

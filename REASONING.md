@@ -12,28 +12,28 @@ wrongly. Say what you predicted, what CLISP printed, and which rule you
 misread. Those entries belong in the correction commits.
 
 ## P01
-value: 7 (a compound form follows the rule selected by its head), kind: integer (the variables the + function performed upon are integers), length: 3 (there is a function, an integer, and a list inside the main list), operator: function (+ is classified as a function)
+`'(+ 1 (* 2 3))` heads with the `+` function. The integer `1` and list `(* 2 3)` is handed to `+` for evaluation and returns `7`. That is an integer, so the length is `none` and the head is a `function`.
 
 ## P02
-value: 3 (a compound form follows the rule selected by its head), kind: integer (the variables the + function performed upon are integers), length: 3 (there is a function, and two integers inside the list), operator: function (+ is classified as a function)
+`(+ 1 2)` heads with the `+` function. The integers `1` and `2` are handed to `+` for evaluation and returns `3`. That is the integer so the length is `none` and the head is a `function`.
 
 ## P03
-value: null, kind: nil, length: 0 (nil is an empty list), operator: none
+`nil` is an atom so both it's value and kind are itself. Since `nil` is an atom, length is `none` and there are no operators.
 
 ## P04
-value: null, kind: symbol (t is considered as a symbol), length: 1, operator: none
+`t` is a symbol so the value is itself and the kind is symbol. Because `t` is a symbol the both length and operator is `none`.
 
 ## P05
-Replace this line with the rule behind this case's four fields.
+`(symbolp, nil)` heads with the symbol `symbolp`. It is a list unevaluated (because of `quote`) so the kind is a list, while the length is 2 and the operator is `none`.
 
 ## P06
-Replace this line with the rule behind this case's four fields.
+`(car '())` heads with the `car` function. `car` is handed an empty list so the kind is `nil` and length is `none`. Since `car` heads, the operator is a `function`.
 
 ## P07
-Replace this line with the rule behind this case's four fields.
+`(cons 1 '(2 3))` heads with `cons` function. The integer `1` is added to `(2 3)` list (by `cons`) so the list is now (1 2 3) therefore the kind is a `list`, the length 3, and operator is `function`.
 
 ## P08
-Replace this line with the rule behind this case's four fields.
+`(if (null '()) 'empty 'full)` heads with the special operator `if`.
 
 ## P09
 Replace this line with the rule behind this case's four fields.
