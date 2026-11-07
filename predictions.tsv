@@ -13,5 +13,5 @@ P11	(defun, ps3-twice, (n), (*, n, 2,))	symbol	none	macro
 P12	(labels ((down (n)...)))            integer	none	special operator
 P13	(mapcar #'length...)                list	3   	function
 P14	(mapcar (lambda (n)...))	        list	3   	function
-P15	TODO	                            TODO	TODO	macro
-P16	TODO	                            TODO	TODO	special operator
+P15	(lambda, (n), (*, n, 2))	        none	none	macro
+P16	(let, factor(...), ...)	            integer	none	special operator
