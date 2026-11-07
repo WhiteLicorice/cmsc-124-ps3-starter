@@ -1,17 +1,17 @@
-id	value	            kind	length	operator
-P01	(+, 1, (*, 2, 3,))  integer none    function
-P02	(+, 1, 2)	        integer	none	function
-P03	nil	                nil 	none	none
-P04	t	                symbol	none	none
-P05	(symbolp, nil)      list	2	    none
-P06	(car, ', ())        list	none   	function
-P07	(1, 2, 3)	        list	3	    function
-P08	(if, (null, ', ()))	TODO	TODO	special operator
-P09	TODO	            TODO	TODO	special operator
-P10	TODO	            TODO	TODO	TODO
-P11	TODO	            TODO	TODO	TODO
-P12	TODO	            TODO	TODO	TODO
-P13	TODO	            TODO	TODO	TODO
-P14	TODO	            TODO	TODO	TODO
-P15	TODO	            TODO	TODO	TODO
-P16	TODO	            TODO	TODO	TODO
+id	value	                            kind	length	operator
+P01	(+, 1, (*, 2, 3,))                  integer none    function
+P02	(+, 1, 2)	                        integer	none	function
+P03	nil	                                nil 	none	none
+P04	t	                                symbol	none	none
+P05	(symbolp, nil)                      list	2	    none
+P06	(car, ', ())                        list	none   	function
+P07	(1, 2, 3)	                        list	3	    function
+P08	(if, (null, ', ()))	                symbol	none	special operator
+P09	(and, 1, nil, 3)	                nil 	none	special operator
+P10	(progn, (defvar...), ...)           TODO	TODO	special operator
+P11	(defun, ps3-twice, (n), (*, n, 2,))	symbol	none	macro
+P12	(labels ((down (n)...)))            integer	none	special operator
+P13	(mapcar #'length...)                list	3   	function
+P14	(mapcar (lambda (n)...))	        list	3   	function
+P15	TODO	                            TODO	TODO	macro
+P16	TODO	                            TODO	TODO	special operator
