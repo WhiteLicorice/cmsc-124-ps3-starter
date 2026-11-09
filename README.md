@@ -127,3 +127,10 @@ from the newest. They agree. The grader re-derives all 64 published
 expectations before it scores anything, so a build that printed one value
 differently, or classified one head differently, would stop the run and say so.
 No runner has. `./run P01` also prints the same four fields on all three.
+
+## Members
+
+| Name | GitHub |
+| --- | --- |
+| Andrian Lloyd Maagma | [@andrianllmm](https://github.com/andrianllmm) |
+| Seth Leander Caballero | [@Sesilyo](https://github.com/Sesilyo) |
