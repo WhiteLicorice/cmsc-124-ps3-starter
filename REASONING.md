@@ -12,49 +12,65 @@ wrongly. Say what you predicted, what CLISP printed, and which rule you
 misread. Those entries belong in the correction commits.
 
 ## P01
-`'(+ 1 (* 2 3))` heads with the `+` function. The integer `1` and list `(* 2 3)` is handed to `+` for evaluation and returns `7`. That is an integer, so the length is `none` and the head is a `function`.
+
+`+` is a function, so both arguments are evaluated first. `(* 2 3)` is 6, then `(+ 1 6)` is 7. A number is an integer, so no length.
 
 ## P02
-`(+ 1 2)` heads with the `+` function. The integers `1` and `2` are handed to `+` for evaluation and returns `3`. That is the integer so the length is `none` and the head is a `function`.
+
+`'(+ 1 2)` is just `(quote (+ 1 2))`, so the head is `quote`, a special operator. It returns the list `(+ 1 2)` untouched, a cons with 3 elements.
 
 ## P03
-`nil` is an atom so both it's value and kind are itself. Since `nil` is an atom, length is `none` and there are no operators.
+
+`nil` evaluates to itself. It's the empty list, so kind is null and length is 0. It's an atom, so no operator.
 
 ## P04
-`t` is a symbol so the value is itself and the kind is symbol. Because `t` is a symbol the both length and operator is `none`.
+
+`t` evaluates to itself. It's a symbol that isn't `nil`, so length is none. It's an atom, so no operator.
 
 ## P05
-`(symbolp, nil)` heads with the symbol `symbolp`. It is a list unevaluated (because of `quote`) so the kind is a list, while the length is 2 and the operator is `none`.
+
+`symbolp` is a function, so `nil` is evaluated first and passed in. `nil` is a symbol, so the result is `t`, a symbol with length none.
 
 ## P06
-`(car '())` heads with the `car` function. `car` is handed an empty list so the kind is `nil` and length is `none`. Since `car` heads, the operator is a `function`.
+
+`car` is a function and `'()` is the empty list. `car` of the empty list is `nil`, so null with length 0.
 
 ## P07
-`(cons 1 '(2 3))` heads with `cons` function. The integer `1` is added to `(2 3)` list (by `cons`) so the list is now (1 2 3) therefore the kind is a `list`, the length 3, and operator is `function`.
+
+`cons` is a function. It puts 1 in front of `(2 3)`, giving `(1,2,3)`, a cons with 3 elements.
 
 ## P08
-`(if (null '()) 'empty 'full)` heads with the special operator `if`. The arguments of an if function in LISP follows: `<if condition then else>` and the condition asks if null is an empty list (which it is) and the corresponding branch is the if argument that returns `empty`. Therefore the kind is `symbol`, length is `none`, and operator is `special operator`.
+
+`if` is a special operator. `(null '())` is true since `()` is `nil`, so only the first branch is evaluated and get the symbol `empty`. Symbols have no length.
 
 ## P09
-`(and 1 nil 3)` is headed by the `and` special operator which goes over its arguments and returns `nil` if it's among the list but returns the final value if none found. Since there is a `nil` in the given list, the kind is `nil`, the length is `none`, and the operator is `special operator`.
+
+`and` stops at the first `nil` with result `nil` (null, length 0). CLISP also treats `and` as a special operator, and that is checked first, so I put special-operator.
 
 ## P10
-`progn (defvar...) (defun...) (let...)` is headed by the `progn` special operator that runs all the fuctions wrrapped by it but returns the value of the last function only which is the function headed by `let`. Source: `https://www.lispworks.com/documentation/HyperSpec/Body/s_progn.htm`
+
+`progn` is a special operator that returns its last form. `defvar` makes `*ps3-rate*` special, so the `let` rebinding to 10 is seen inside `ps3-scale`. That's 3 \* 10 = 30.
 
 ## P11
-`defun ps3-twice (n) (* n 2)` is headed by the `defun` macro that defines a function globally and returns the `symbol` that defines the function which is `ps3-twice`. So kind is `symbol`, length is `none`, and operator is `macro`.
+
+`defun` is a macro. It defines the function and returns its name without calling it, so the value is the symbol `ps3-twice`.
 
 ## P12
-`(labels ((down (n)... )` is headed by the `labels` special function that defines a function locally within scope and is recursive and returns the value of the last evaluated expression in the body which is `2`. So kind is `integer`, length is `none`, and operator is `special operator`. Source: `https://www.lispworks.com/documentation/HyperSpec/Body/s_flet_.htm`
+
+`labels` is a special operator that defines a recursive local function. `down` conses n onto `down(n-1)` until 0, so `(down 3)` is `(3,2,1)`, a cons of length 3.
 
 ## P13
-`(mapcar #'length...)` is headed by the `mapcar` function which maps the `length` function to `(1 2)`, `()`, and `(3)` and returns a list of values which is `(2 0 1)`. Kind is `list`, length is `3`, and operator is `function`.
+
+`mapcar` is a function. It applies `length` to each sublist, giving `(2,0,1)`.
 
 ## P14
-`(mapcar (lambda (n)...))` maps the `lambda` function to one list only which is `(1 2 3)` and returns `(1 4 9)`. The kind is `list`, length is `3`, and opertaor is `function`.
+
+`mapcar` is a function. The lambda squares each element, giving `(1,4,9)`.
 
 ## P15
-`(lambda (n) (* n 2))` is headed by `lambda` function that initializes a no-name function. But since there's no input, the kind is `none`, length is `none`, and the operator is still `function`.
+
+`lambda` is a macro. Evaluating it only creates a function and doesn't call it, so the value is `#<function>` with kind function.
 
 ## P16
-`(let ((factor 2))...` is headed by `let` that locally declares a variable `factor` equal to 2 and the second `let` declares `f` as a lambda and a third `let` declares another `factor` variable equal to 10 and `funcall f 3` evaluates to `3 * 10` equals to `30`. So the kind is `integer`, the length is `none`, and operator is `function`.
+
+`let` is a special operator. I read `f` as looking up `factor` when it runs, and the nearest one then is 10, so `(funcall f 3)` is 30.
