@@ -14,4 +14,4 @@ P12	(3,2,1)	cons	3	special-operator
 P13	(2,0,1)	cons	3	function
 P14	(1,4,9)	cons	3	function
 P15	#<function>	function	none	macro
-P16	30	integer	none	special-operator
+P16	6	integer	none	special-operator

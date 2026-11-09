@@ -74,3 +74,5 @@ misread. Those entries belong in the correction commits.
 ## P16
 
 `let` is a special operator. We read `f` as looking up `factor` when it runs, and the nearest one then is 10, so `(funcall f 3)` is 30.
+
+We predicted the value to be 30 from `f` looking up `factor = 10` as part of `funcall`'s scope. However, `f` looks up to `factor = 2` for `factor`'s value because it's part of `f`'s scope. The rule is that functions refer to the variable it can "see" in its scope, not the caller's scope. Therefore, the correct value is `6`.
