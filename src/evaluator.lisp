@@ -22,29 +22,26 @@
 ;;; E1 -- numbers and symbols.
 
 (defun lookup (name env)
-  "The value NAME is bound to in ENV.
-
-The first match wins, so an inner binding shadows an outer one that shares its
-name. Signal an error when NAME is not bound at all."
-  (declare (ignore name env))
-  (error "lookup is not implemented"))
+  (let ((pair (assoc name env)))
+    (if pair 
+        (cdr pair)
+        (error "no name for ~a" name))))
 
 ;;; E2 -- prefix arithmetic.
 
 (defun eval-operands (exprs env)
-  "Every expression in EXPRS, evaluated in the same ENV, as a list.
-
-MAPCAR and a LAMBDA do this in one line. Watch the arity: EVAL-EXPR takes two
-arguments and MAPCAR hands its function one."
-  (declare (ignore exprs env))
-  (error "eval-operands is not implemented"))
+  (mapcar (lambda (n) (eval-expr n env))  exprs))
 
 (defun apply-op (op values)
+  (cond ((eq op '+) (+ (first values) (second values)))
+  ((eq op '-) (- (first values) (second values)))
+  ((eq op '*) (* (first values) (second values)))
+  (t (error "unknown operator ~a" op))))
+
   "Apply the arithmetic operator OP to the two numbers in VALUES.
 
 OP is the symbol +, -, or *. Signal an error for anything else."
-  (declare (ignore op values))
-  (error "apply-op is not implemented"))
+
 
 ;;; E3 -- let.
 
@@ -87,9 +84,8 @@ CLOSURE is not a closure, and when the argument count does not match."
 ;;; The dispatcher.
 
 (defun eval-expr (expr env)
-  "The value of EXPR in ENV.
 
-Order the branches with care. NIL is a symbol as well as the empty list, and a
-number is not a cons, so the atom tests come before the list tests."
-  (declare (ignore expr env))
-  (error "eval-expr is not implemented"))
+  (cond ((numberp expr) expr)
+        ((symbolp expr) (lookup expr env))
+        ((member (car expr) '(+ - *))
+          (apply-op (car expr) (eval-operands (cdr expr) env)))))
