@@ -61,8 +61,8 @@ in parallel and an init cannot see a name the same LET introduces."
         (body (third expr)))
     (let ((names (mapcar #'first bindings))
           (inits (mapcar #'second bindings)))
-      (let ((vals (eval-operands inits env)))
-        (eval-expr body (extend-env names vals env))))))
+      (let ((values (eval-operands inits env)))
+        (eval-expr body (extend-env names values env))))))
 
 ;;; E4 -- lambda and application.
 
@@ -92,5 +92,4 @@ CLOSURE is not a closure, and when the argument count does not match."
         ((symbolp expr) (lookup expr env))
         ((member (car expr) '(+ - *))
           (apply-op (car expr) (eval-operands (cdr expr) env)))
-          ((eq (car expr) 'let) (eval-let expr env))
-          )
+          ((eq (car expr) 'let) (eval-let expr env))))
