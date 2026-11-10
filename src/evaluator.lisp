@@ -100,5 +100,6 @@ CLOSURE is not a closure, and when the argument count does not match."
         ((eq (car expr) 'let) (eval-let expr env))
         ((eq (car expr) 'lambda)
           (make-closure (second expr) (third expr) env))
+        (t (apply-closure(eval-expr(car expr) env) (eval-operands (cdr expr) env)))
   )
 )
