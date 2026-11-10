@@ -57,13 +57,12 @@ ENV, because the caller keeps using it after the extension goes out of scope."
 
 Every init is evaluated in ENV before any name is bound, so the bindings happen
 in parallel and an init cannot see a name the same LET introduces."
-  (second expr)
   (let ((bindings (second expr))
-        (body (cddr expr)))
+        (body (third expr)))
     (let ((names (mapcar #'first bindings))
           (inits (mapcar #'second bindings)))
-      (let ((values (eval-operands inits env)))
-        (eval-expr body (extend-env names values env))))))
+      (let ((vals (eval-operands inits env)))
+        (eval-expr body (extend-env names vals env))))))
 
 ;;; E4 -- lambda and application.
 
@@ -92,4 +91,6 @@ CLOSURE is not a closure, and when the argument count does not match."
   (cond ((numberp expr) expr)
         ((symbolp expr) (lookup expr env))
         ((member (car expr) '(+ - *))
-          (apply-op (car expr) (eval-operands (cdr expr) env)))))
+          (apply-op (car expr) (eval-operands (cdr expr) env)))
+          ((eq (car expr) 'let) (eval-let expr env))
+          )
