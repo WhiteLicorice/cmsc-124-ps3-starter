@@ -4,7 +4,7 @@ P02	(+,1,2)	cons	3	special-operator
 P03	nil	null	0	none
 P04	t	symbol	none	none
 P05	t	symbol	none	function
-P06	nil	null    none	car
+P06	nil	null	0	function
 P07	(1,2,3)	cons	3	function
 P08	empty	symbol	none	special-operator
 P09	nil	null	0	special-operator
