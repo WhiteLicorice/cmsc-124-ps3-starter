@@ -102,10 +102,9 @@ CLOSURE is not a closure, and when the argument count does not match."
 
 ;;; The dispatcher.
 
+;; eval-expr(expr, env) *same param definitions as lookup
 (defun eval-expr (expr env)
-  "The value of EXPR in ENV.
-
-Order the branches with care. NIL is a symbol as well as the empty list, and a
-number is not a cons, so the atom tests come before the list tests."
-  (declare (ignore expr env))
-  (error "eval-expr is not implemented"))
+  (cond
+    ((numberp expr) expr)                 ;; if number, return number
+    ((symbolp expr) (lookup expr env))    ;; if symbol, call `lookup()`
+    (t (error "'expr' is not valid"))))
