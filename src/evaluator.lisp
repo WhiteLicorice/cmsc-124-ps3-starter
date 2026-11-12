@@ -48,8 +48,13 @@ arguments and MAPCAR hands its function one."
   "Apply the arithmetic operator OP to the two numbers in VALUES.
 
 OP is the symbol +, -, or *. Signal an error for anything else."
-  (declare (ignore op values))
-  (error "apply-op is not implemented"))
+  (case op
+    (+ (+ (first values) (second values)))
+    (- (- (first values) (second values)))
+    (* (* (first values) (second values)))
+    (otherwise
+     (error "Unknown arithmetic operator: ~S" op))))
+
 
 ;;; E3 -- let.
 
