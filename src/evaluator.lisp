@@ -26,8 +26,11 @@
 
 The first match wins, so an inner binding shadows an outer one that shares its
 name. Signal an error when NAME is not bound at all."
-  (declare (ignore name env))
-  (error "lookup is not implemented"))
+  (let ((binding (assoc name env)))
+    (if binding
+        (cdr binding)
+        (error "Unbound variable: ~S" name))))
+
 
 ;;; E2 -- prefix arithmetic.
 
